@@ -1,0 +1,27 @@
+xmin = -0.7
+xmax = 1
+ymin = -0.7
+ymax = 1
+
+N = 1500
+
+dx = (xmax - xmin) / N
+dy = (ymax - ymin) / N
+
+def inside_region(x, y):
+    kidney = (x*x + y*y)**2 <= (x**3 + y**3)
+    disc = (x - 0.25)**2 + (y - 0.25)**2 <= 0.125
+    return kidney and not disc
+
+area = 0.0
+
+for i in range(N):
+    for j in range(N):
+
+        x = xmin + (i + 0.5) * dx
+        y = ymin + (j + 0.5) * dy
+
+        if inside_region(x, y):
+            area += dx * dy
+
+print("Rectangle (midpoint) area =", area)
