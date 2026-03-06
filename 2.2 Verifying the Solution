@@ -1,0 +1,60 @@
+import random
+
+N = 126
+
+# Save original A for residual check
+A = [[random.uniform(-1,1) for j in range(N)] for i in range(N)]
+A_original = [row[:] for row in A]
+
+# Vector b
+b = [1.0 for i in range(N)]
+b_original = b[:]
+
+# ---------- Gaussian Elimination ----------
+for k in range(N):
+
+    # Partial Pivoting
+    max_row = k
+    max_val = abs(A[k][k])
+
+    for i in range(k+1, N):
+        if abs(A[i][k]) > max_val:
+            max_val = abs(A[i][k])
+            max_row = i
+
+    if max_row != k:
+        A[k], A[max_row] = A[max_row], A[k]
+        b[k], b[max_row] = b[max_row], b[k]
+
+    # Elimination
+    for i in range(k+1, N):
+        factor = A[i][k] / A[k][k]
+
+        for j in range(k, N):
+            A[i][j] -= factor * A[k][j]
+
+        b[i] -= factor * b[k]
+
+# ---------- Back Substitution ----------
+x = [0.0]*N
+
+for i in range(N-1, -1, -1):
+    x[i] = b[i]
+
+    for j in range(i+1, N):
+        x[i] -= A[i][j]*x[j]
+
+    x[i] /= A[i][i]
+
+# ---------- Compute L1 Residual Norm ----------
+residual_norm = 0.0
+
+for i in range(N):
+    Ax_i = 0.0
+
+    for j in range(N):
+        Ax_i += A_original[i][j] * x[j]
+
+    residual_norm += abs(Ax_i - b_original[i])
+
+print("L1 Residual Norm ||Ax - b||_1 =", residual_norm)
